@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 class ArgsParserTest {
-
   @Test
   public void parse_ArgumentWithoutFlag_ShouldThrowException() {
     String[] args = new String[] {"value"};
@@ -28,9 +27,16 @@ class ArgsParserTest {
 
   @Test
   public void getAll_MultipleArguments_ShouldReturnArgumentsAsStringArray() {
-    ArgsParser argsParser = new ArgsParser(new String[] {"--one", "first", "second", "third"});
+    ArgsParser argsParser = new ArgsParser(
+        new String[] {"--one", "first", "second", "third", "-two", "first",
+                      "second", "--three", "first", "second"});
 
-    assertArrayEquals(new String[] {"first", "second", "third"}, argsParser.getAll("one"));
+    assertArrayEquals(new String[] {"first", "second", "third"},
+                      argsParser.getAll("one"));
+    assertArrayEquals(new String[] {"first", "second"},
+                      argsParser.getAll("two"));
+    assertArrayEquals(new String[] {"first", "second"},
+                      argsParser.getAll("three"));
   }
 
   @Test
@@ -43,9 +49,9 @@ class ArgsParserTest {
   }
 
   @Test
-  public void getSingle_MultipleArguments_MixedHyphens_ShouldReturnArgumentsAsString() {
-    ArgsParser argsParser =
-        new ArgsParser(new String[] {"--one", "first", "-two", "second", "--three", "third"});
+  public void getSingle_MultipleArguments_ShouldReturnArgumentsAsString() {
+    ArgsParser argsParser = new ArgsParser(
+        new String[] {"--one", "first", "-two", "second", "--three", "third"});
 
     assertEquals("first", argsParser.getFirst("one"));
     assertEquals("second", argsParser.getFirst("two"));
@@ -54,24 +60,22 @@ class ArgsParserTest {
 
   @Test
   public void getSingle_NonExistingArgument_ShouldThrowException() {
-    String[] args = new String[] {};
-    ArgsParser argsParser = new ArgsParser(args);
+    ArgsParser argsParser = new ArgsParser(new String[] {});
 
-    assertThrows(IllegalArgumentException.class, () -> argsParser.getFirst("one"));
+    assertThrows(IllegalArgumentException.class,
+                 () -> argsParser.getFirst("one"));
   }
 
   @Test
   public void has_ExistingFlag_ShouldReturnTrue() {
-    String[] args = new String[] {"--one"};
-    ArgsParser argsParser = new ArgsParser(args);
+    ArgsParser argsParser = new ArgsParser(new String[] {"--one"});
 
     assertTrue(argsParser.has("one"));
   }
 
   @Test
   public void has_NonExistingFlag_ShouldReturnFalse() {
-    String[] args = new String[] {};
-    ArgsParser argsParser = new ArgsParser(args);
+    ArgsParser argsParser = new ArgsParser(new String[] {});
 
     assertFalse(argsParser.has("one"));
   }

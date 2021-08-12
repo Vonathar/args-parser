@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class ArgsParser {
-
   private final Map<String, String[]> arguments = new HashMap<>();
   private final Set<String> options = new HashSet<>();
 
@@ -19,7 +18,8 @@ public class ArgsParser {
   private void parse(String[] args) {
     for (int i = 0; i < args.length; i++) {
       if (!isFlag(args[i])) {
-        throw new IllegalArgumentException("Argument without flag found: " + args[i]);
+        throw new IllegalArgumentException("Argument without flag found: "
+                                           + args[i]);
       }
       if (i + 1 == args.length) {
         options.add(args[i].replaceAll("-", ""));
@@ -36,7 +36,7 @@ public class ArgsParser {
               values.add(value);
               i++;
             }
-            arguments.put(flag, values.toArray(String[]::new));
+            arguments.put(flag, values.toArray(String[] ::new));
           }
         }
       }
@@ -49,14 +49,16 @@ public class ArgsParser {
 
   public String getFirst(String flag) {
     if (!arguments.containsKey(flag)) {
-      throw new IllegalArgumentException(String.format("Argument does not exist: %s", flag));
+      throw new IllegalArgumentException(
+          String.format("Argument does not exist: %s", flag));
     }
     return arguments.get(flag)[0];
   }
 
   public String[] getAll(String flag) {
     if (!arguments.containsKey(flag)) {
-      throw new IllegalArgumentException(String.format("Argument does not exist: %s", flag));
+      throw new IllegalArgumentException(
+          String.format("Argument does not exist: %s", flag));
     }
     return arguments.get(flag);
   }
