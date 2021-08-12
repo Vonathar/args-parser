@@ -1,7 +1,9 @@
 package io.github.vonathar;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,10 +18,10 @@ public class ArgsParser {
 
   private void parse(String[] args) {
     for (int i = 0; i < args.length; i++) {
+      if (!isFlag(args[i])) {
+        throw new IllegalArgumentException("Argument without flag found: " + args[i]);
+      }
       if (i + 1 == args.length) {
-        if (!isFlag(args[i])) {
-          throw new IllegalArgumentException("Argument without flag found: " + args[i]);
-        }
         options.add(args[i].replaceAll("-", ""));
       }
       if (isFlag(args[i])) {
@@ -27,10 +29,15 @@ public class ArgsParser {
         if (i + 1 < args.length) {
           if (isFlag(args[i + 1])) {
             options.add(flag);
+          } else {
+            List<String> values = new ArrayList<>();
+            while (i + 1 < args.length && !isFlag(args[i + 1])) {
+              String value = args[i + 1];
+              values.add(value);
+              i++;
+            }
+            arguments.put(flag, values.toArray(String[]::new));
           }
-          String value = args[i + 1];
-          arguments.put(flag, new String[] {value});
-          i++;
         }
       }
     }

@@ -1,5 +1,6 @@
 package io.github.vonathar;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,81 +17,39 @@ class ArgsParserTest {
     assertThrows(IllegalArgumentException.class, () -> new ArgsParser(args));
   }
 
+  @Test
   public void getAll_SingleArgument_ShouldReturnArgumentAsStringArray() {
-    String[] args = new String[] {"-flag", "value"};
-    ArgsParser argsParser = new ArgsParser(args);
+    ArgsParser argsParser1 = new ArgsParser(new String[] {"-one", "first"});
+    ArgsParser argsParser2 = new ArgsParser(new String[] {"--one", "first"});
 
-    String expected = "value";
-    String actual = argsParser.getAll("flag")[0];
-
-    assertEquals(expected, actual);
+    assertEquals("first", argsParser1.getAll("one")[0]);
+    assertEquals("first", argsParser2.getAll("one")[0]);
   }
 
   @Test
-  public void getSingle_SingleArgument_SingleHyphen_ShouldReturnArgumentAsString() {
-    String[] args = new String[] {"-flag", "value"};
-    ArgsParser argsParser = new ArgsParser(args);
+  public void getAll_MultipleArguments_ShouldReturnArgumentsAsStringArray() {
+    ArgsParser argsParser = new ArgsParser(new String[] {"--one", "first", "second", "third"});
 
-    String expected = "value";
-    String actual = argsParser.getFirst("flag");
-
-    assertEquals(expected, actual);
+    assertArrayEquals(new String[] {"first", "second", "third"}, argsParser.getAll("one"));
   }
 
   @Test
-  public void getSingle_MultipleArguments_SingleHyphen_ShouldReturnArgumentsAsString() {
-    String[] args = new String[] {"-one", "first", "--two", "second", "-three", "third"};
-    ArgsParser argsParser = new ArgsParser(args);
+  public void getSingle_SingleArgument_ShouldReturnArgumentAsString() {
+    ArgsParser argsParser1 = new ArgsParser(new String[] {"-one", "first"});
+    ArgsParser argsParser2 = new ArgsParser(new String[] {"--one", "first"});
 
-    String expected1 = "first";
-    String actual1 = argsParser.getFirst("one");
-    String expected2 = "second";
-    String actual2 = argsParser.getFirst("two");
-    String expected3 = "third";
-    String actual3 = argsParser.getFirst("three");
-
-    assertEquals(expected1, actual1);
-    assertEquals(expected2, actual2);
-    assertEquals(expected3, actual3);
-  }
-
-  @Test
-  public void getSingle_SingleArgument_DoubleHyphen_ShouldReturnArgumentAsString() {
-    String[] args = new String[] {"--flag", "value"};
-    ArgsParser argsParser = new ArgsParser(args);
-
-    String expected = "value";
-    String actual = argsParser.getFirst("flag");
-
-    assertEquals(expected, actual);
-  }
-
-  @Test
-  public void getSingle_MultipleArguments_DoubleHyphen_ShouldReturnArgumentsAsString() {
-    String[] args = new String[] {"--one", "value", "--two", "another"};
-    ArgsParser argsParser = new ArgsParser(args);
-
-    String expected1 = "value";
-    String actual1 = argsParser.getFirst("one");
-    String expected2 = "another";
-    String actual2 = argsParser.getFirst("two");
-
-    assertEquals(expected1, actual1);
-    assertEquals(expected2, actual2);
+    assertEquals("first", argsParser1.getFirst("one"));
+    assertEquals("first", argsParser2.getFirst("one"));
   }
 
   @Test
   public void getSingle_MultipleArguments_MixedHyphens_ShouldReturnArgumentsAsString() {
-    String[] args = new String[] {"--one", "value", "-two", "another"};
-    ArgsParser argsParser = new ArgsParser(args);
+    ArgsParser argsParser =
+        new ArgsParser(new String[] {"--one", "first", "-two", "second", "--three", "third"});
 
-    String expected1 = "value";
-    String actual1 = argsParser.getFirst("one");
-    String expected2 = "another";
-    String actual2 = argsParser.getFirst("two");
-
-    assertEquals(expected1, actual1);
-    assertEquals(expected2, actual2);
+    assertEquals("first", argsParser.getFirst("one"));
+    assertEquals("second", argsParser.getFirst("two"));
+    assertEquals("third", argsParser.getFirst("three"));
   }
 
   @Test
