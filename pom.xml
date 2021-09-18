@@ -61,8 +61,6 @@
     </build>
 
     <dependencies>
-
-
         <dependency>
             <artifactId>slf4j-api</artifactId>
             <groupId>org.slf4j</groupId>
